@@ -1,0 +1,101 @@
+<html>
+<body>
+
+<div id="divUI">
+	<label>MIDI File to Load:</label><br />
+	<input type="file" onchange="inputMIDIFile_Changed(event);"></input>
+	<br />
+
+	<label>File Contents as JSON:</label><br />
+	<textarea id="textareaMIDIFileAsJSON" cols="80" rows="20" readonly="true"></textarea>
+	<br />
+
+	<button onclick="buttonSave_Clicked();">Save</button>
+</div>
+
+<script type="text/javascript">
+
+// ui events
+
+function buttonSave_Clicked()
+{
+	var midiFile = Session.Instance.midiFile;
+	var midiFileAsBytes = midiFile.toBytes();
+
+	var bytesToSave = midiFileAsBytes;
+	var numberOfBytes = bytesToSave.length;
+	var bytesAsArrayBuffer = new ArrayBuffer(numberOfBytes);
+	var bytesAsUIntArray = new Uint8Array(bytesAsArrayBuffer);
+	for (var i = 0; i < numberOfBytes; i++)
+	{
+		bytesAsUIntArray[i] = bytesToSave[i];
+	}
+
+	var bytesAsBlob = new Blob
+	(
+		[ bytesAsArrayBuffer ],
+		{ type: "application/type" }
+	);
+
+	var downloadLink = document.createElement("a");
+	downloadLink.href = URL.createObjectURL(bytesAsBlob);
+	downloadLink.download = "Song.mid";
+	downloadLink.click();
+}
+
+function inputMIDIFile_Changed(event)
+{
+	var inputMIDIFile = event.target;
+	var file = inputMIDIFile.files[0];
+	if (file != null)
+	{
+		var fileReader = new FileReader();
+		fileReader.onload = function(event2)
+		{
+			var fileAsBinaryString = event2.target.result;
+			var fileAsBytes = [];
+			for (var i = 0; i < fileAsBinaryString.length; i++)
+			{
+				var byte = fileAsBinaryString.charCodeAt(i);
+				fileAsBytes.push(byte);
+			}
+			var midiFile = MIDIFile.fromBytes(fileAsBytes);
+			Session.Instance.midiFile = midiFile;
+			var midiFileAsJSON = midiFile.toStringJSON();
+			var textareaMIDIFileAsJSON = document.getElementById
+			(
+				"textareaMIDIFileAsJSON"
+			);
+			textareaMIDIFileAsJSON.value = midiFileAsJSON;
+		}
+		fileReader.readAsBinaryString(file);
+	}
+}
+
+</script>
+
+<script type="text/javascript" src="ArrayExtensions.js"></script>
+<script type="text/javascript" src="ByteStream.js"></script>
+<script type="text/javascript" src="MIDIFile.js"></script>
+<script type="text/javascript" src="MIDIFileChunk_Header.js"></script>
+<script type="text/javascript" src="MIDIFileChunk_Header_Division_Frames.js"></script>
+<script type="text/javascript" src="MIDIFileChunk_Header_Division_Ticks.js"></script>
+<script type="text/javascript" src="MIDIFileChunk_Other.js"></script>
+<script type="text/javascript" src="MIDIFileChunk_Track.js"></script>
+<script type="text/javascript" src="MIDIFileEvent.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_ChannelKeyPressure.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_Controlle.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_Controller_Type.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_Meta.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_Meta_EndOfTrack.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_Meta_Tempo.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_Meta_Text.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_Meta_TimeSignatur.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_NoteOff.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_NoteOn.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_ProgramChange.js"></script>
+<script type="text/javascript" src="MIDIFileEventDefn_SystemExclusive.js"></script>
+<script type="text/javascript" src="Session.js"></script>
+
+</body>
+</html>
