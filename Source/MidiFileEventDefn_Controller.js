@@ -7,8 +7,11 @@ class MidiFileEventDefn_Controller
 	)
 	{
 		this.channel = channel;
-		this.controllerNumber = controllerNumber; // See MidiFileEventDefn_Controller_Type.byCode().
+		this.controllerNumber = controllerNumber;
 		this.controllerValue = controllerValue;
+
+		this._controllerName =
+			MidiFileEventDefn_Controller_Type.byCode(this.controllerNumber).name;
 	}
 
 	static EventTypeCode = 11;

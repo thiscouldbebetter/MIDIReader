@@ -34,7 +34,7 @@ class MidiFileEventDefn_Controller_Type_Instances
 		// LSB = "least significant byte"
 
 		var ControllerType = MidiFileEventDefn_Controller_Type;
-		var ct = (a, b) = new ControllerType(a, b);
+		var ct = (a, b) => new ControllerType(a, b);
 
 		this.BankSelect 		= ct(0, "BankSelect");
 		this.ModulationWheel 	= ct(1, "ModulationWheel");
@@ -78,18 +78,20 @@ class MidiFileEventDefn_Controller_Type_Instances
 		// 74 - brightness ("filter cutoff frequency Hz")
 		// 75-79 - Sound controllers 6-10.  "Used for filters, effects, etc."
 		// 80-83 - general purpose controllers 5-8
-		this.EffectDepth1 = new ControllerType(91, "EffectDepth1"); // "Usually reverb."
-		this.EffectDepth2 = new ControllerType(92, "EffectDepth2"); // "Usually tremolo."
-		this.EffectDepth3 = new ControllerType(93, "EffectDepth3"); // "Usually chorus."
-		this.EffectDepth4 = new ControllerType(94, "EffectDepth4"); // "Usually detuning."
-		this.EffectDepth5 = new ControllerType(95, "EffectDepth5"); // "Usually phasing."
+		// 84-90 - undefined
+		this.EffectDepth1 = new ControllerType(91, "EffectDepth1/Reverb"); // "Usually reverb."
+		this.EffectDepth2 = new ControllerType(92, "EffectDepth2/Tremolo"); // "Usually tremolo."
+		this.EffectDepth3 = new ControllerType(93, "EffectDepth3/Chorus"); // "Usually chorus."
+		this.EffectDepth4 = new ControllerType(94, "EffectDepth4/Detuning"); // "Usually detuning."
+		this.EffectDepth5 = new ControllerType(95, "EffectDepth5/Phasing"); // "Usually phasing."
 		// 96 - data entry +1
 		// 97 - data entry -1
 		// 98 - non-registered parm number lsb
 		// 99 - non-registered parm number msb
 		// 100 - registered parm number lsb
 		// 101 - registered parm number msb
-		// 120 - all sound off
+		// 102-119 - undefined
+		// 120 - all sound off ("channel mute")
 		this.ResetAllControllers = new ControllerType(121, "ResetAllControllers");
 		// 122 - local control on/off
 		// 123 - all notes off
@@ -103,14 +105,22 @@ class MidiFileEventDefn_Controller_Type_Instances
 			this.BankSelect,
 			this.ModulationWheel,
 			this.BreathControl,
+			// 3
 			this.FootController,
-			null, // 4
 			this.PortamentoTime,
-			null, // 6 - data entry
+			// 6 - data entry
 			this.ChannelVolume,
-			null, // 8 - balance
-			null, // 9
+			// 8 - balance
+			// 9 - undefined
 			this.Pan,
+			// 11-83 - todo
+			this.EffectDepth1,
+			this.EffectDepth2,
+			this.EffectDepth3,
+			this.EffectDepth4,
+			this.EffectDepth5,
+			// 96-120 - todo
+			this.ResetAllControllers
 		];
 
 		this._All.addLookups("name");
