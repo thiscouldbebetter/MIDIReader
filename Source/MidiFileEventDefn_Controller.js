@@ -7,7 +7,7 @@ class MidiFileEventDefn_Controller
 	)
 	{
 		this.channel = channel;
-		this.controllerNumber = controllerNumber;
+		this.controllerNumber = controllerNumber; // See MidiFileEventDefn_Controller_Type.byCode().
 		this.controllerValue = controllerValue;
 	}
 
