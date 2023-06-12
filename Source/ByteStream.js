@@ -1,26 +1,27 @@
 
 // classes
 
-function ByteStream(bytes)
+class ByteStream
 {
-	this.bytes = bytes;
-	this.byteOffset = 0;
-}
+	constructor(bytes)
+	{
+		this.bytes = bytes;
+		this.byteOffset = 0;
+	}
 
-{
-	ByteStream.prototype.hasMoreBytes = function()
+	hasMoreBytes()
 	{
 		return (this.byteOffset < this.bytes.length);
 	}
 
-	ByteStream.prototype.readByte = function()
+	readByte()
 	{
 		var returnValue = this.bytes[this.byteOffset];
 		this.byteOffset++;
 		return returnValue;
 	}
 
-	ByteStream.prototype.readBytes = function(numberOfBytes)
+	readBytes(numberOfBytes)
 	{
 		var bytes = [];
 
@@ -33,7 +34,7 @@ function ByteStream(bytes)
 		return bytes;
 	}
 
-	ByteStream.prototype.readIntegerBE = function(numberOfBytes)
+	readIntegerBE(numberOfBytes)
 	{
 		var returnValue = 0;
 
@@ -47,7 +48,7 @@ function ByteStream(bytes)
 		return returnValue;
 	}
 
-	ByteStream.prototype.readString = function(numberOfBytes)
+	readString(numberOfBytes)
 	{
 		var returnValue = "";
 		for (var i = 0; i < numberOfBytes; i++)
@@ -59,9 +60,9 @@ function ByteStream(bytes)
 		return returnValue;
 	}
 
-	ByteStream.prototype.readVariableLengthQuantity = function()
+	readVariableLengthQuantity()
 	{
-		returnValue = 0;
+		var returnValue = 0;
 		while (true)
 		{
 			returnValue = returnValue << 7;
@@ -80,20 +81,20 @@ function ByteStream(bytes)
 		return returnValue;
 	}
 
-	ByteStream.prototype.seek = function(byteOffset)
+	seek(byteOffset)
 	{
 		this.byteOffset = byteOffset;
 		return this;
 	}
 
-	ByteStream.prototype.writeByte = function(byte)
+	writeByte(byte)
 	{
 		this.bytes.push(byte);
 		this.byteOffset++;
 		return this;
 	}
 
-	ByteStream.prototype.writeBytes = function(bytes)
+	writeBytes(bytes)
 	{
 		for (var i = 0; i < bytes.length; i++)
 		{
@@ -103,7 +104,7 @@ function ByteStream(bytes)
 		return this;
 	}
 
-	ByteStream.prototype.writeIntegerBE = function(value, numberOfBytes)
+	writeIntegerBE(value, numberOfBytes)
 	{
 		// "BE" == "Big-Endian".
 		for (var i = 0; i < numberOfBytes; i++)
@@ -116,7 +117,7 @@ function ByteStream(bytes)
 		return this;
 	}
 
-	ByteStream.prototype.writeString = function(value)
+	writeString(value)
 	{
 		for (var i = 0; i < value.length; i++)
 		{
@@ -127,7 +128,7 @@ function ByteStream(bytes)
 		return this;
 	}
 
-	ByteStream.prototype.writeVariableLengthQuantity = function(value)
+	writeVariableLengthQuantity(value)
 	{
 		var bytes = [];
 		do

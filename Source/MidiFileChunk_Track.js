@@ -1,27 +1,28 @@
 
-function MIDIFileChunk_Track(dataLengthInBytes, events)
+class MidiFileChunk_Track
 {
-	this._chunkTypeName = "Track";
-	this.dataLengthInBytes = dataLengthInBytes; // hack
-	this.events = events;
-}
+	constructor(dataLengthInBytes, events)
+	{
+		this._chunkTypeName = "Track";
+		this.dataLengthInBytes = dataLengthInBytes; // hack
+		this.events = events;
+	}
 
-{
-	MIDIFileChunk_Track.ChunkTypeCode = "MTrk";
+	static ChunkTypeCode = "MTrk";
 
 	// bytes
 
-	MIDIFileChunk_Track.fromBytes = function(byteStream, chunkDataLengthInBytes)
+	static fromBytes(byteStream, chunkDataLengthInBytes)
 	{
 		var chunkDataBytes = byteStream.readBytes(chunkDataLengthInBytes);
 		var byteStreamEvents = new ByteStream(chunkDataBytes);
 		var events = [];
 		var statusByte = null;
 
-		while (byteStreamEvents.hasMoreBytes() == true)
+		while (byteStreamEvents.hasMoreBytes() )
 		{
-			var delta = byteStreamEvents.readVariableLengthQuantity();					
-			
+			var delta = byteStreamEvents.readVariableLengthQuantity();
+
 			var statusByteNext = byteStreamEvents.readByte();
 			if (statusByteNext >= 128)
 			{
@@ -40,30 +41,30 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 			var eventDefn
 			if (eventTypeCode < 15)
 			{
-				eventDefn = MIDIFileChunk_Track.fromBytes_EventChannel
+				eventDefn = MidiFileChunk_Track.fromBytes_EventChannel
 				(
 					byteStreamEvents, statusByte, eventTypeCode
 				);
 			}
 			else if (eventTypeCode == 15)
 			{
-				eventDefn = MIDIFileChunk_Track.fromBytes_EventNonChannel
+				eventDefn = MidiFileChunk_Track.fromBytes_EventNonChannel
 				(
 					byteStreamEvents, statusByte
 				);
 			}
 
-			var event = new MIDIFileEvent(delta, eventDefn);
-			
+			var event = new MidiFileEvent(delta, eventDefn);
+
 			events.push(event);
 		}
 
-		var chunk = new MIDIFileChunk_Track(chunkDataLengthInBytes, events);
+		var chunk = new MidiFileChunk_Track(chunkDataLengthInBytes, events);
 
 		return chunk;
-	}	
+	}
 
-	MIDIFileChunk_Track.fromBytes_EventNonChannel = function
+	static fromBytes_EventNonChannel
 	(
 		byteStreamEvents, statusByte
 	)
@@ -74,7 +75,7 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 
 		if (eventSubTypeCode == 0) 
 		{
-			eventDefn = MIDIFileEventDefn_SystemExclusive.fromBytes(byteStreamEvents);
+			eventDefn = MidiFileEventDefn_SystemExclusive.fromBytes(byteStreamEvents);
 		}
 		else if (eventSubTypeCode == 2)
 		{
@@ -119,7 +120,7 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 		{
 			// "reset"
 			// meta
-			eventDefn = MIDIFileChunk_Track.fromBytes_EventMeta
+			eventDefn = MidiFileChunk_Track.fromBytes_EventMeta
 			(
 				byteStreamEvents
 			);
@@ -133,7 +134,7 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 		return eventDefn;
 	}
 
-	MIDIFileChunk_Track.fromBytes_EventMeta = function(byteStreamEvents)
+	static fromBytes_EventMeta(byteStreamEvents)
 	{
 		var eventDefn = null;
 
@@ -145,23 +146,23 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 		}
 		else if (metaTypeCode < 8)
 		{
-			eventDefn = MIDIFileEventDefn_Meta_Text.fromBytes
+			eventDefn = MidiFileEventDefn_Meta_Text.fromBytes
 			(
 				byteStreamEvents, metaTypeCode
 			);
 		}
 		else if (metaTypeCode == 0x20) // 32
 		{
-			// MIDI channel prefix
+			// Midi channel prefix
 			var one = byteStreamEvents.readByte();
 		}
-		else if (metaTypeCode == MIDIFileEventDefn_Meta_EndOfTrack.MetaTypeCode) // 47
+		else if (metaTypeCode == MidiFileEventDefn_Meta_EndOfTrack.MetaTypeCode) // 47
 		{
-			eventDefn = MIDIFileEventDefn_Meta_EndOfTrack.fromBytes(byteStreamEvents);
+			eventDefn = MidiFileEventDefn_Meta_EndOfTrack.fromBytes(byteStreamEvents);
 		}
-		else if (metaTypeCode == MIDIFileEventDefn_Meta_Tempo.MetaTypeCode) // 81
+		else if (metaTypeCode == MidiFileEventDefn_Meta_Tempo.MetaTypeCode) // 81
 		{
-			eventDefn = MIDIFileEventDefn_Meta_Tempo.fromBytes(byteStreamEvents);
+			eventDefn = MidiFileEventDefn_Meta_Tempo.fromBytes(byteStreamEvents);
 		}
 		else if (metaTypeCode == 0x54) // 84
 		{
@@ -172,12 +173,12 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 			var seconds = byteStreamEvents.readByte();
 			var frames = byteStreamEvents.readByte();
 			var hundredthsOfFrame = byteStreamEvents.readByte();
-			eventDefn = new MIDIFileEventDefn_Meta_SMTPEOffset
+			eventDefn = new MidiFileEventDefn_Meta_SMTPEOffset
 			(
 				hours, minutes, seconds, frames, hundredthsOfFrame
 			);
 		}
-		else if (metaTypeCode == MIDIFileEventDefn_Meta_TimeSignature.MetaTypeCode) // 88
+		else if (metaTypeCode == MidiFileEventDefn_Meta_TimeSignature.MetaTypeCode) // 88
 		{
 			// time signature
 			var four = byteStreamEvents.readByte();
@@ -188,19 +189,26 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 			// "3" = eighth note, etc.
 			var denominator = Math.pow(2, denominatorAsPowerOf2);
 			var midiClocksPerMetronomeClick = byteStreamEvents.readByte();
-			var numberOf32ndNotesPer24MIDIClocks = byteStreamEvents.readByte();
-			// 24 (hex or dec?) MIDI clocks = "1 quarter note".
-			eventDefn = new MIDIFileEventDefn_Meta_TimeSignature
+			var numberOf32ndNotesPer24MidiClocks = byteStreamEvents.readByte();
+			// 24 (hex or dec?) Midi clocks = "1 quarter note".
+			eventDefn = new MidiFileEventDefn_Meta_TimeSignature
 			(
 				numerator, denominator, 
 				midiClocksPerMetronomeClick, 
-				numberOf32ndNotesPer24MIDIClocks
+				numberOf32ndNotesPer24MidiClocks
 			);
 		}
-		else if (metaTypeCode == 0x59) // 89
+		else if (metaTypeCode == MidiFileEventDefn_Meta_KeySignature.MetaTypeCode) // 89
 		{
 			// key signature
 			var two = byteStreamEvents.readByte();
+			var numberOfSharpsOrFlats = byteStreamEvents.readByte(); // -7 to 7
+			var majorOrMinor = byteStreamEvents.readByte(); // 0 for major, 1 for minor
+			eventDefn = new MidiFileEventDefn_Meta_KeySignature
+			(
+				numberOfSharpsOrFlats,
+				majorOrMinor
+			);
 		}
 		else if (metaTypeCode == 0x7F)
 		{
@@ -219,7 +227,7 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 		return eventDefn;
 	}
 
-	MIDIFileChunk_Track.fromBytes_EventChannel = function
+	static fromBytes_EventChannel
 	(
 		byteStreamEvents, statusByte, eventTypeCode
 	)
@@ -228,34 +236,34 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 
 		var eventDefn = null;
 
-		if (eventTypeCode == MIDIFileEventDefn_NoteOff.EventTypeCode) // 8
+		if (eventTypeCode == MidiFileEventDefn_NoteOff.EventTypeCode) // 8
 		{
-			eventDefn = MIDIFileEventDefn_NoteOff.fromBytes(byteStreamEvents, channel);
+			eventDefn = MidiFileEventDefn_NoteOff.fromBytes(byteStreamEvents, channel);
 		}
-		else if (eventTypeCode == MIDIFileEventDefn_NoteOn.EventTypeCode) // 9
+		else if (eventTypeCode == MidiFileEventDefn_NoteOn.EventTypeCode) // 9
 		{
-			eventDefn = MIDIFileEventDefn_NoteOn.fromBytes(byteStreamEvents, channel);
+			eventDefn = MidiFileEventDefn_NoteOn.fromBytes(byteStreamEvents, channel);
 		}
 		else if (eventTypeCode == 10)
 		{
 			// polyphonic key pressure
 			var keyCode = byteStreamEvents.readByte();
 			var pressure = byteStreamEvents.readByte();
-			eventDefn = new MIDIFileEventDefn_Pressure(channel, keyCode, pressure);
+			eventDefn = new MidiFileEventDefn_Pressure(channel, keyCode, pressure);
 		}
-		else if (eventTypeCode == MIDIFileEventDefn_Controller.EventTypeCode) // 11
+		else if (eventTypeCode == MidiFileEventDefn_Controller.EventTypeCode) // 11
 		{
-			eventDefn = MIDIFileEventDefn_Controller.fromBytes(byteStreamEvents, channel);
+			eventDefn = MidiFileEventDefn_Controller.fromBytes(byteStreamEvents, channel);
 		}
-		else if (eventTypeCode == MIDIFileEventDefn_ProgramChange.EventTypeCode) // 12
+		else if (eventTypeCode == MidiFileEventDefn_ProgramChange.EventTypeCode) // 12
 		{
-			eventDefn = MIDIFileEventDefn_ProgramChange.fromBytes(byteStreamEvents, channel);
+			eventDefn = MidiFileEventDefn_ProgramChange.fromBytes(byteStreamEvents, channel);
 		}
-		else if (eventTypeCode == MIDIFileEventDefn_ChannelKeyPressure.EventTypeCode) // 13
+		else if (eventTypeCode == MidiFileEventDefn_ChannelKeyPressure.EventTypeCode) // 13
 		{
 			// channel key pressure
 			var channelPressure = byteStreamEvents.readByte();
-			eventDefn = new MIDIFileEventDefn_ChannelKeyPressure
+			eventDefn = new MidiFileEventDefn_ChannelKeyPressure
 			(
 				channel, keyCode, channelPressure
 			);
@@ -266,7 +274,7 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 			var lsb = byteStreamEvents.readByte();
 			var msb = byteStreamEvents.readByte();
 			var value = (msb << 8) | lsb;
-			eventDefn = new MIDIFileEventDefn_PitchBend(channel, value);
+			eventDefn = new MidiFileEventDefn_PitchBend(channel, value);
 		}
 		else
 		{
@@ -276,9 +284,9 @@ function MIDIFileChunk_Track(dataLengthInBytes, events)
 		return eventDefn;
 	}
 
-	MIDIFileChunk_Track.prototype.toBytes = function(byteStream)
+	toBytes(byteStream)
 	{
-		byteStream.writeString(MIDIFileChunk_Track.ChunkTypeCode);
+		byteStream.writeString(MidiFileChunk_Track.ChunkTypeCode);
 		var byteStreamEvents = new ByteStream([]);
 		var eventStatusCodeRunning = null;
 		for (var i = 0; i < this.events.length; i++)

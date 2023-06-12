@@ -1,9 +1,5 @@
 
-function Session()
+class Session
 {
-	// Do nothing.
-}
-
-{
-	Session.Instance = new Session();
+	static Instance = new Session();
 }

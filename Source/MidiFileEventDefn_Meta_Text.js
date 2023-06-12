@@ -1,16 +1,17 @@
 
-function MIDIFileEventDefn_Meta_Text(metaTypeCode, text)
+class MidiFileEventDefn_Meta_Text
 {
-	this.metaTypeCode = metaTypeCode;
-	this.text = text;
-}
+	constructor(metaTypeCode, text)
+	{
+		this.metaTypeCode = metaTypeCode;
+		this.text = text;
+	}
 
-{
-	MIDIFileEventDefn_Meta_Text.fromBytes = function(byteStream, metaTypeCode)
+	static fromBytes(byteStream, metaTypeCode)
 	{
 		var textLength = byteStream.readVariableLengthQuantity();
 		var text = byteStream.readString(textLength);
-		var eventDefn = new MIDIFileEventDefn_Meta_Text(metaTypeCode, text);
+		var eventDefn = new MidiFileEventDefn_Meta_Text(metaTypeCode, text);
 
 		if (metaTypeCode == 1)
 		{
@@ -44,15 +45,12 @@ function MIDIFileEventDefn_Meta_Text(metaTypeCode, text)
 		return eventDefn;
 	}
 
-	MIDIFileEventDefn_Meta_Text.prototype.statusCode = function()
+	statusCode()
 	{
-		return MIDIFileEventDefn_Meta.StatusCode;
+		return MidiFileEventDefn_Meta.StatusCode;
 	}
-	
-	MIDIFileEventDefn_Meta_Text.prototype.toBytes = function
-	(
-		byteStream
-	)
+
+	toBytes(byteStream)
 	{
 		byteStream.writeByte(this.metaTypeCode);
 		byteStream.writeVariableLengthQuantity(this.text.length);

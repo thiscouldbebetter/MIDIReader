@@ -1,17 +1,29 @@
 
-function MIDIFileEventDefn_Controller_Type(code, name)
+class MidiFileEventDefn_Controller_Type
 {
-	this.code = code;
-	this.name = name;
+	constructor(code, name)
+	{
+		this.code = code;
+		this.name = name;
+	}
+
+	static Instances()
+	{ 
+		if (MidiFileEventDefn_Controller_Type._instances == null)
+		{
+			MidiFileEventDefn_Controller_Type._instances =
+				new MidiFileEventDefn_Controller_Type_Instances();
+		}
+		return MidiFileEventDefn_Controller_Type._instances;
+	}
+
 }
 
+class MidiFileEventDefn_Controller_Type_Instances
 {
-	MIDIFileEventDefn_Controller_Type.Instances = 
-		new MIDIFileEventDefn_Controller_Type_Instances();
-
-	function MIDIFileEventDefn_Controller_Type_Instances()
+	constructor()
 	{
-		var ControllerType = MIDIFileEventDefn_Controller_Type;
+		var ControllerType = MidiFileEventDefn_Controller_Type;
 		this.BankSelect = new ControllerType(0, "BankSelect");
 		this.ModulationWheel = new ControllerType(1, "ModulationWheel");
 		this.BreathControl = new ControllerType(2, "BreathControl");

@@ -2,13 +2,23 @@
 <body>
 
 <div id="divUI">
-	<label>MIDI File to Load:</label><br />
-	<input type="file" onchange="inputMIDIFile_Changed(event);"></input>
-	<br />
 
-	<label>File Contents as JSON:</label><br />
-	<textarea id="textareaMIDIFileAsJSON" cols="80" rows="20" readonly="true"></textarea>
-	<br />
+	<h3>Midi File Reader</h3>
+
+	<p>
+		Upload a valid .mid file to examine its format.  A sample file
+		is provided <a href="../TestData/C_Major_Scale.mid">here</a>.
+	</p>
+
+	<div>
+		<label>Midi File to Load:</label><br />
+		<input type="file" onchange="inputMidiFile_Changed(event);"></input>
+	</div>
+
+	<div>
+		<label>File Contents as JSON:</label><br />
+		<textarea id="textareaMidiFileAsJSON" cols="80" rows="20" readonly="true"></textarea>
+	</div>
 
 	<button onclick="buttonSave_Clicked();">Save</button>
 </div>
@@ -43,10 +53,10 @@ function buttonSave_Clicked()
 	downloadLink.click();
 }
 
-function inputMIDIFile_Changed(event)
+function inputMidiFile_Changed(event)
 {
-	var inputMIDIFile = event.target;
-	var file = inputMIDIFile.files[0];
+	var inputMidiFile = event.target;
+	var file = inputMidiFile.files[0];
 	if (file != null)
 	{
 		var fileReader = new FileReader();
@@ -59,14 +69,14 @@ function inputMIDIFile_Changed(event)
 				var byte = fileAsBinaryString.charCodeAt(i);
 				fileAsBytes.push(byte);
 			}
-			var midiFile = MIDIFile.fromBytes(fileAsBytes);
+			var midiFile = MidiFile.fromBytes(fileAsBytes);
 			Session.Instance.midiFile = midiFile;
 			var midiFileAsJSON = midiFile.toStringJSON();
-			var textareaMIDIFileAsJSON = document.getElementById
+			var textareaMidiFileAsJSON = document.getElementById
 			(
-				"textareaMIDIFileAsJSON"
+				"textareaMidiFileAsJSON"
 			);
-			textareaMIDIFileAsJSON.value = midiFileAsJSON;
+			textareaMidiFileAsJSON.value = midiFileAsJSON;
 		}
 		fileReader.readAsBinaryString(file);
 	}
@@ -76,25 +86,26 @@ function inputMIDIFile_Changed(event)
 
 <script type="text/javascript" src="ArrayExtensions.js"></script>
 <script type="text/javascript" src="ByteStream.js"></script>
-<script type="text/javascript" src="MIDIFile.js"></script>
-<script type="text/javascript" src="MIDIFileChunk_Header.js"></script>
-<script type="text/javascript" src="MIDIFileChunk_Header_Division_Frames.js"></script>
-<script type="text/javascript" src="MIDIFileChunk_Header_Division_Ticks.js"></script>
-<script type="text/javascript" src="MIDIFileChunk_Other.js"></script>
-<script type="text/javascript" src="MIDIFileChunk_Track.js"></script>
-<script type="text/javascript" src="MIDIFileEvent.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_ChannelKeyPressure.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_Controlle.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_Controller_Type.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_Meta.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_Meta_EndOfTrack.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_Meta_Tempo.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_Meta_Text.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_Meta_TimeSignatur.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_NoteOff.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_NoteOn.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_ProgramChange.js"></script>
-<script type="text/javascript" src="MIDIFileEventDefn_SystemExclusive.js"></script>
+<script type="text/javascript" src="MidiFile.js"></script>
+<script type="text/javascript" src="MidiFileChunk_Header.js"></script>
+<script type="text/javascript" src="MidiFileChunk_Header_Division_Frames.js"></script>
+<script type="text/javascript" src="MidiFileChunk_Header_Division_Ticks.js"></script>
+<script type="text/javascript" src="MidiFileChunk_Other.js"></script>
+<script type="text/javascript" src="MidiFileChunk_Track.js"></script>
+<script type="text/javascript" src="MidiFileEvent.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_ChannelKeyPressure.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_Controller.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_Controller_Type.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_Meta.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_Meta_EndOfTrack.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_Meta_KeySignature.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_Meta_Tempo.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_Meta_Text.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_Meta_TimeSignature.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_NoteOff.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_NoteOn.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_ProgramChange.js"></script>
+<script type="text/javascript" src="MidiFileEventDefn_SystemExclusive.js"></script>
 <script type="text/javascript" src="Session.js"></script>
 
 </body>

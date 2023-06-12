@@ -1,18 +1,19 @@
 
-function MIDIFile(chunks)
+class MidiFile
 {
-	// Based on file specifications found at the URLs
-	// https://www.csie.ntu.edu.tw/~r92092/ref/midi/
-	// and
-	// http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html.
+		constructor(chunks)
+	{
+		// Based on file specifications found at the URLs
+		// https://www.csie.ntu.edu.tw/~r92092/ref/midi/
+		// and
+		// http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMidifileformat.html.
 
-	this.chunks = chunks;
-}
+		this.chunks = chunks;
+	}
 
-{
 	// bytes
 
-	MIDIFile.fromBytes = function(bytes)
+	static fromBytes(bytes)
 	{
 		var byteStream = new ByteStream(bytes);
 
@@ -25,17 +26,17 @@ function MIDIFile(chunks)
 
 			var chunk;
 
-			if (chunkTypeCode == MIDIFileChunk_Header.ChunkTypeCode)
+			if (chunkTypeCode == MidiFileChunk_Header.ChunkTypeCode)
 			{
-				chunk = MIDIFileChunk_Header.fromBytes(byteStream, chunkDataLengthInBytes);
+				chunk = MidiFileChunk_Header.fromBytes(byteStream, chunkDataLengthInBytes);
 			}
-			else if (chunkTypeCode == MIDIFileChunk_Track.ChunkTypeCode)
+			else if (chunkTypeCode == MidiFileChunk_Track.ChunkTypeCode)
 			{
-				chunk = MIDIFileChunk_Track.fromBytes(byteStream, chunkDataLengthInBytes);
+				chunk = MidiFileChunk_Track.fromBytes(byteStream, chunkDataLengthInBytes);
 			}
 			else
 			{
-				chunk = MIDIFileChunk_Other.fromBytes
+				chunk = MidiFileChunk_Other.fromBytes
 				(
 					byteStream, chunkTypeCode, chunkDataLengthInBytes
 				);
@@ -44,12 +45,12 @@ function MIDIFile(chunks)
 			chunks.push(chunk);
 		}
 
-		var returnValue = new MIDIFile(chunks);
+		var returnValue = new MidiFile(chunks);
 
 		return returnValue;
 	}
 
-	MIDIFile.prototype.toBytes = function()
+	toBytes()
 	{
 		var byteStream = new ByteStream([]);
 
@@ -69,7 +70,7 @@ function MIDIFile(chunks)
 
 	// json
 
-	MIDIFile.prototype.toStringJSON = function()
+	toStringJSON()
 	{
 		var returnValue = JSON.stringify(this, null, 4);
 		return returnValue;
